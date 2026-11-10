@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="assets/axis_logo.png">
+<title>Axis</title>
+<meta name="description" content="Axis reúne tu correo y tus calendarios para que organices universidad, prácticas y vida personal con una visión completa de tu día.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
+<style>
+/* Layout concept: one long scroll. Hero with a live "Thursday" timeline, then the three misses, the AI proposal demo, the concept video, benefits and a waitlist. */
+:root {
+  --bg: #FAF9FF;
+  --surface: #FFFFFF;
+  --tint: #F0EEFF;
+  --ink: #22225F;
+  --ink-soft: #55557F;
+  --line: #E2E0F4;
+  --accent: #7C6CFF;
+  --btn-bg: #5B4BE0;
+  --btn-fg: #FFFFFF;
+  --cal-uni: #1F9E92;
+  --cal-work: #E8742A;
+  --cal-personal: #7C6CFF;
+  --alert: #E5484D;
+  --ok: #1F9E6A;
+  --shadow: 0 1px 2px rgba(34, 34, 95, 0.06), 0 12px 32px rgba(34, 34, 95, 0.08);
+  --font-display: "Sora", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101030;
+    --surface: #1A1A45;
+    --tint: #23235A;
+    --ink: #F1F0FF;
+    --ink-soft: #B0AFD9;
+    --line: #333370;
+    --accent: #9C8FFF;
+    --btn-bg: #9C8FFF;
+    --btn-fg: #14143A;
+    --cal-uni: #3CC7B8;
+    --cal-work: #FF9A57;
+    --cal-personal: #9C8FFF;
+    --alert: #FF6B73;
+    --ok: #4CD6A0;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101030;
+  --surface: #1A1A45;
+  --tint: #23235A;
+  --ink: #F1F0FF;
+  --ink-soft: #B0AFD9;
+  --line: #333370;
+  --accent: #9C8FFF;
+  --btn-bg: #9C8FFF;
+  --btn-fg: #14143A;
+  --cal-uni: #3CC7B8;
+  --cal-work: #FF9A57;
+  --cal-personal: #9C8FFF;
+  --alert: #FF6B73;
+  --ok: #4CD6A0;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.55;
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--bg);
+  z-index: 30;
+}
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.12; margin: 0; text-wrap: balance; letter-spacing: -0.02em; }
+h1 { font-size: clamp(2.3rem, 5.4vw, 3.8rem); font-weight: 800; }
+h2 { font-size: clamp(1.8rem, 3.8vw, 2.7rem); font-weight: 700; }
+h3 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
+p { margin: 0; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
+
+.wrap { max-width: 1160px; margin: 0 auto; }
+.section { padding-block: clamp(56px, 9vw, 112px); }
+.eyebrow { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.lead { color: var(--ink-soft); font-size: 1.15rem; max-width: 56ch; }
+
+/* header */
+.site-header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 40;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  margin-left: calc(-1 * var(--gutter-l));
+  margin-right: calc(-1 * var(--gutter-r));
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+}
+.site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+.logo { height: 28px; width: auto; display: block; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .logo { filter: brightness(0) invert(1); } }
+:root[data-theme="dark"] .logo { filter: brightness(0) invert(1); }
+.nav { display: flex; align-items: center; gap: 28px; }
+.nav a.link { text-decoration: none; font-weight: 500; color: var(--ink-soft); }
+.nav a.link:hover { color: var(--ink); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font: 600 1rem var(--font-body);
+  border: 0; border-radius: 999px; padding: 13px 24px; cursor: pointer; text-decoration: none;
+  background: var(--btn-bg); color: var(--btn-fg);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(91, 75, 224, 0.28); }
+.btn.small { padding: 9px 18px; font-size: 0.95rem; }
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--line); }
+.btn.ghost:hover { box-shadow: inset 0 0 0 2px var(--accent); }
+@media (max-width: 720px) { .nav a.link { display: none; } }
+
+/* hero */
+.hero { padding-block: clamp(40px, 7vw, 88px) clamp(48px, 7vw, 96px); }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
+@media (max-width: 920px) { .hero-grid { grid-template-columns: minmax(0, 1fr); } }
+.pill { display: inline-flex; align-items: center; gap: 8px; background: var(--tint); color: var(--ink); border-radius: 999px; padding: 6px 14px; font-size: 0.85rem; font-weight: 600; margin-bottom: 22px; }
+.pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: block; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero .lead { margin-top: 22px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.motto { margin-top: 26px; font-family: var(--font-display); font-weight: 700; color: var(--ink); }
+.motto span { color: var(--accent); }
+
+/* timeline demo */
+.demo { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow); padding: 20px; min-width: 0; }
+.demo-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px; margin-bottom: 14px; }
+.demo-title { font-family: var(--font-display); font-weight: 700; }
+.tag { font-size: 0.75rem; font-weight: 600; color: var(--ink-soft); background: var(--tint); border-radius: 999px; padding: 3px 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  font: 600 0.88rem var(--font-body); color: var(--ink);
+  background: transparent; border: 2px solid var(--line); border-radius: 999px; padding: 6px 12px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.chip .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--c); }
+.chip[aria-pressed="true"] { border-color: var(--c); background: var(--tint); }
+.chip[aria-pressed="false"] { opacity: 0.6; }
+.chip[aria-pressed="false"] .dot { background: transparent; box-shadow: inset 0 0 0 2px var(--c); }
+.chip.gaps { --c: var(--ink-soft); margin-left: auto; }
+
+.timeline { position: relative; height: 528px; margin-left: 44px; }
+.hour { position: absolute; left: -44px; right: 0; border-top: 1px solid var(--line); height: 0; }
+.hour span { position: absolute; left: 0; top: -0.7em; font-size: 0.72rem; color: var(--ink-soft); background: var(--surface); padding-right: 6px; font-variant-numeric: tabular-nums; }
+.hour.line-only span { display: none; }
+.hour { margin-left: 0; }
+.ev {
+  position: absolute; border-radius: 10px; padding: 6px 9px; font-size: 0.8rem; line-height: 1.25; overflow: hidden;
+  background: color-mix(in srgb, var(--c) 18%, var(--surface));
+  border-left: 5px solid var(--c);
+  color: var(--ink);
+  transition: left 0.3s ease, width 0.3s ease, opacity 0.2s ease;
+}
+.ev b { display: block; font-weight: 700; }
+.ev small { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.ev.clash { box-shadow: 0 0 0 2px var(--alert); z-index: 2; }
+.gap-block {
+  position: absolute; left: 4px; right: 4px; border: 2px dashed var(--line); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 600; color: var(--ink-soft);
+}
+.status { margin-top: 16px; padding: 12px 14px; border-radius: 14px; background: var(--tint); font-size: 0.95rem; display: flex; gap: 10px; align-items: flex-start; min-height: 3.6em; }
+.status.alert { background: color-mix(in srgb, var(--alert) 14%, var(--surface)); }
+.status.good { background: color-mix(in srgb, var(--ok) 14%, var(--surface)); }
+.status b { font-weight: 700; }
+
+/* problem */
+.problem-head { max-width: 760px; margin-bottom: 44px; }
+.moments { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 920px) { .moments { grid-template-columns: minmax(0, 1fr); } }
+.moment { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 14px; }
+.moment .cal-mark { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); }
+.moment .cal-mark i { width: 12px; height: 12px; border-radius: 4px; background: var(--c); display: block; }
+.moment .feel { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); font-size: 0.92rem; color: var(--ink-soft); }
+.moment p { color: var(--ink-soft); }
+.cause { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 32px; align-items: center; background: var(--ink); color: #F4F3FF; border-radius: 28px; padding: clamp(28px, 5vw, 56px); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cause { background: var(--tint); } }
+:root[data-theme="dark"] .cause { background: var(--tint); }
+@media (max-width: 820px) { .cause { grid-template-columns: minmax(0, 1fr); } }
+.cause h2 { color: inherit; }
+.cause .stats { display: grid; gap: 22px; }
+.stat strong { display: block; font-family: var(--font-display); font-size: clamp(2.4rem, 5vw, 3.4rem); font-weight: 800; line-height: 1; color: #B9B0FF; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 0.95rem; color: #D8D5FF; }
+.stat em { font-style: normal; font-size: 0.8rem; color: #A8A4E0; display: block; margin-top: 2px; }
+
+/* solution */
+.solution-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 64px); align-items: start; margin-top: 44px; }
+@media (max-width: 920px) { .solution-grid { grid-template-columns: minmax(0, 1fr); } }
+.steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 28px; counter-reset: step; }
+.steps li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; counter-increment: step; }
+.steps li::before { content: counter(step); width: 44px; height: 44px; border-radius: 14px; background: var(--tint); color: var(--accent); font: 800 1.1rem var(--font-display); display: grid; place-items: center; }
+.steps p { color: var(--ink-soft); margin-top: 4px; }
+.inbox { display: grid; gap: 8px; margin-bottom: 16px; }
+.mail {
+  display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 12px; align-items: center; text-align: left;
+  width: 100%; font: inherit; color: var(--ink); cursor: pointer;
+  background: transparent; border: 2px solid transparent; border-radius: 14px; padding: 10px 12px;
+}
+.mail:hover { background: var(--tint); }
+.mail[aria-pressed="true"] { border-color: var(--accent); background: var(--tint); }
+.mail .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--c); }
+.mail .who { display: block; font-size: 0.78rem; color: var(--ink-soft); font-weight: 600; }
+.mail .subj { display: block; font-weight: 600; font-size: 0.95rem; line-height: 1.3; }
+.mail .flag { font-size: 0.7rem; font-weight: 700; color: var(--alert); background: color-mix(in srgb, var(--alert) 14%, var(--surface)); padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.proposal { border-radius: 18px; background: var(--tint); padding: 18px; display: grid; gap: 12px; min-height: 190px; }
+.proposal .kicker { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+.proposal .what { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; line-height: 1.3; }
+.proposal .when { display: inline-flex; width: fit-content; background: var(--surface); border-radius: 10px; padding: 6px 12px; font-weight: 600; font-size: 0.92rem; border-left: 5px solid var(--c); }
+.proposal .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.proposal.done { background: color-mix(in srgb, var(--ok) 14%, var(--surface)); }
+.proposal.done .kicker { color: var(--ok); }
+
+/* video */
+.video-wrap { background: var(--ink); border-radius: 28px; padding: clamp(14px, 2.4vw, 28px); box-shadow: var(--shadow); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .video-wrap { background: var(--tint); } }
+:root[data-theme="dark"] .video-wrap { background: var(--tint); }
+video { display: block; width: 100%; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 16px; background: #000; }
+.video-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 32px; }
+
+/* benefits */
+.benefits { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 56px; margin-top: 40px; }
+@media (max-width: 820px) { .benefits { grid-template-columns: minmax(0, 1fr); } }
+.benefit { padding-block: 24px; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+.benefit p { color: var(--ink-soft); }
+
+/* cta */
+.cta { background: var(--tint); border-radius: 32px; padding: clamp(32px, 6vw, 72px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px; align-items: center; }
+@media (max-width: 820px) { .cta { grid-template-columns: minmax(0, 1fr); } }
+.form { display: grid; gap: 12px; }
+.form label { font-weight: 600; font-size: 0.92rem; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; }
+.input { flex: 1 1 220px; min-width: 0; font: inherit; color: var(--ink); background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 12px 20px; }
+.input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
+.form-msg { min-height: 1.6em; font-size: 0.92rem; color: var(--ink-soft); }
+.form-msg.ok { color: var(--ok); font-weight: 600; }
+.form-msg.err { color: var(--alert); font-weight: 600; }
+.fine { font-size: 0.82rem; color: var(--ink-soft); }
+
+/* footer */
+footer { border-top: 1px solid var(--line); padding-block: 40px 56px; font-size: 0.9rem; color: var(--ink-soft); display: grid; gap: 16px; }
+footer .sources { max-width: 90ch; }
+footer .team { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a href="#top" aria-label="Axis, inicio"><img class="logo" src="assets/axis_logo.png" alt="Axis" width="104" height="28"></a>
+    <nav class="nav" aria-label="Principal">
+      <a class="link" href="#problema">El problema</a>
+      <a class="link" href="#solucion">Cómo funciona</a>
+      <a class="link" href="#video">Vídeo</a>
+      <a class="btn small" href="#unete">Quiero probarlo</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1>Todo tu correo y tu agenda, <em>juntos.</em></h1>
+        <p class="lead">Axis reúne tus cuentas de correo y tus calendarios para que organices tus estudios, tus prácticas y tu vida personal con una visión completa de tu día.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#unete">Quiero probar Axis</a>
+          <a class="btn ghost" href="#video">Ver el vídeo de 1 minuto</a>
+        </div>
+        <p class="motto">La IA propone. <span>Tú decides.</span></p>
+      </div>
+
+      <div class="demo" aria-labelledby="demo1-title">
+        <div class="demo-head">
+          <span class="demo-title" id="demo1-title">El jueves de Rafa</span>
+          <span class="tag">Ejemplo, pruébalo</span>
+        </div>
+        <div class="chips" id="chips" role="group" aria-label="Calendarios visibles"></div>
+        <div class="timeline" id="timeline" aria-label="Agenda del jueves de 8:00 a 20:00"></div>
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="problema">
+    <div class="wrap">
+      <div class="problem-head">
+        <div class="eyebrow">El problema</div>
+        <h2>No se te pasó por desorganizado. Lo tenías apuntado, en otro sitio.</h2>
+        <p class="lead" style="margin-top:18px">Rafa apunta sus clases en el calendario de la universidad, sus reuniones en el del trabajo y sus planes en el personal. En una sola semana le pasó tres veces.</p>
+      </div>
+      <div class="moments">
+        <article class="moment" style="--c: var(--cal-uni)">
+          <div class="cal-mark"><i></i> Calendario de la universidad</div>
+          <h3>La reunión olvidada</h3>
+          <p>Revisó el calendario del trabajo antes de empezar el día. La reunión de la asignatura de prácticas estaba en el de la universidad, que esa mañana no abrió.</p>
+          <div class="feel">Se la perdió y tuvo que dar explicaciones a su tutor.</div>
+        </article>
+        <article class="moment" style="--c: var(--cal-personal)">
+          <div class="cal-mark"><i></i> Calendario personal</div>
+          <h3>El plan cancelado</h3>
+          <p>Quedó con sus amigos un jueves por la tarde porque su calendario personal estaba libre. La reunión de trabajo estaba en otro calendario.</p>
+          <div class="feel">Tuvo que cancelar a última hora.</div>
+        </article>
+        <article class="moment" style="--c: var(--cal-uni)">
+          <div class="cal-mark"><i></i> Correo de la universidad</div>
+          <h3>El viaje para nada</h3>
+          <p>Fue a la universidad y se encontró el aula vacía. El profesor había cancelado la clase por correo, a la cuenta que no revisó.</p>
+          <div class="feel">Perdió el trayecto y una mañana entera.</div>
+        </article>
+      </div>
+
+      <div class="cause">
+        <div>
+          <div class="eyebrow" style="color:#B9B0FF">Una misma causa</div>
+          <h2>En ninguno de los tres casos faltaba información.</h2>
+          <p style="margin-top:16px;color:#D8D5FF">Cada cosa estaba en un sitio distinto y nada la conectaba con el resto. Cuantos más calendarios tienes, más fácil es que algo se te pase.</p>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong>82,5 %</strong><span>de los profesionales ha faltado a una reunión o la ha movido por choques de horario en el último año.</span><em>Reclaim.ai, 2024</em></div>
+          <div class="stat"><strong>16 %</strong><span>de los jóvenes que estudian en España también trabaja.</span><em>Eurostat, 2024</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="solucion" style="padding-top:0">
+    <div class="wrap">
+      <div class="eyebrow">La solución</div>
+      <h2>Una sola vista. Los avisos que importan, a la vista.</h2>
+      <div class="solution-grid">
+        <ol class="steps">
+          <li>
+            <div><h3>Conecta tus cuentas</h3><p>El correo y el calendario de la universidad, de las prácticas y personales, en un mismo lugar.</p></div>
+          </li>
+          <li>
+            <div><h3>Míralo todo junto</h3><p>Cada calendario con su color. Ves los choques y los huecos libres antes de acordar un plan.</p></div>
+          </li>
+          <li>
+            <div><h3>La IA propone, tú decides</h3><p>Cuando un correo contiene una fecha importante o un cambio, Axis te lo destaca y te propone qué hacer. Nada se añade sin que lo confirmes.</p></div>
+          </li>
+        </ol>
+
+        <div class="demo" aria-labelledby="demo2-title">
+          <div class="demo-head">
+            <span class="demo-title" id="demo2-title">Tu bandeja, con ayuda</span>
+            <span class="tag">Ejemplo, pruébalo</span>
+          </div>
+          <div class="inbox" id="inbox" role="group" aria-label="Correos de ejemplo"></div>
+          <div class="proposal" id="proposal" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="video" style="padding-top:0">
+    <div class="wrap">
+      <div class="video-head">
+        <div>
+          <div class="eyebrow">En un minuto</div>
+          <h2>Mira cómo cambia el día de Rafa.</h2>
+        </div>
+      </div>
+      <div class="video-wrap">
+        <video controls preload="metadata" poster="assets/poster.jpg?v=7" playsinline aria-label="Vídeo conceptual de Axis, 60 segundos">
+          <source src="assets/axis_concept.mp4?v=7" type="video/mp4">
+          Tu navegador no puede reproducir este vídeo.
+        </video>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="wrap">
+      <div class="eyebrow">Lo que ganas</div>
+      <h2>Menos despistes. Más claridad.</h2>
+      <div class="benefits">
+        <div class="benefit"><h3>Conoces tus compromisos sin abrir cada calendario</h3><p>Universidad, prácticas y vida personal, diferenciados por colores en una sola vista.</p></div>
+        <div class="benefit"><h3>Decides con tu disponibilidad completa</h3><p>Consulta esa misma vista antes de acordar una hora con tus amigos.</p></div>
+        <div class="benefit"><h3>Los avisos importantes no se pierden</h3><p>Una cancelación o una fecha de examen destacan entre el resto de correos.</p></div>
+        <div class="benefit"><h3>Encuentras tiempo para estudiar y descansar</h3><p>Ves los huecos que quedan entre compromisos y los reservas para ti.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="unete" style="padding-top:0">
+    <div class="wrap">
+      <div class="cta">
+        <div>
+          <h2>Sé de los primeros en probar Axis.</h2>
+          <p class="lead" style="margin-top:16px">Si compaginas universidad, prácticas y vida personal, queremos tu opinión. Déjanos tu correo y te avisamos cuando haya algo que probar.</p>
+        </div>
+        <form class="form" id="form" novalidate>
+          <label for="email">Tu correo</label>
+          <div class="row">
+            <input class="input" id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="nombre@correo.com" required>
+            <button class="btn" type="submit">Apuntarme</button>
+          </div>
+          <p class="form-msg" id="form-msg" role="status" aria-live="polite"></p>
+          <p class="fine">Solo usaremos tu correo para avisarte sobre Axis.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <img class="logo" src="assets/axis_logo.png" alt="Axis" width="104" height="28">
+  <div class="team"><span>Diego Jaime Vega Sánchez</span><span>Matías Svriz</span><span>Lino Vives Colón</span><span>Art Schmitz</span><span>Paula Wen Seijas Herrero</span><span>Natalia Tercero Barrio</span></div>
+  <p>Proyectos III · U-tad · Sprint 2. Los correos, eventos y nombres de las demos son ejemplos inventados.</p>
+  <p class="sources">Fuentes: Reclaim.ai (2024), estudio sobre reuniones perdidas o movidas por choques de calendario. Eurostat (2024), jóvenes que estudian y trabajan en España.</p>
+</footer>
+
+<script>
+// CONFIG
+var WAITLIST_ENDPOINT = "";
+var STORAGE_KEY = "axis_waitlist";
+var DAY_START = 8;
+var DAY_END = 20;
+var PX_PER_HOUR = 44;
+var MIN_GAP_HOURS = 1;
+
+var CALENDARS = [
+  { id: "uni", name: "Universidad", color: "var(--cal-uni)" },
+  { id: "work", name: "Prácticas", color: "var(--cal-work)" },
+  { id: "personal", name: "Personal", color: "var(--cal-personal)" }
+];
+
+var EVENTS = [
+  { cal: "uni", title: "Bases de datos", start: 9, end: 11 },
+  { cal: "uni", title: "Laboratorio de redes", start: 12, end: 13.5 },
+  { cal: "personal", title: "Comida", start: 14, end: 15 },
+  { cal: "work", title: "Reunión de prácticas", start: 16, end: 17 },
+  { cal: "personal", title: "Quedada con amigos", start: 16.5, end: 18.5 }
+];
+
+var EMAILS = [
+  {
+    cal: "uni", who: "Secretaría de la facultad", subject: "Se cancela la clase de Redes de hoy", flag: "Importante",
+    kicker: "Axis detecta un cambio",
+    what: "Marcar la clase de Redes de hoy como cancelada",
+    when: "Hoy, 10:00",
+    yes: "Marcar cancelada",
+    done: "Clase marcada como cancelada. Ya no haces el viaje para nada."
+  },
+  {
+    cal: "uni", who: "Profesor de Bases de datos", subject: "Examen parcial: martes 24 de noviembre, 10:00", flag: "Fecha",
+    kicker: "Axis propone un evento",
+    what: "Añadir Examen parcial de Bases de datos a tu agenda",
+    when: "Mar 24 nov, 10:00",
+    yes: "Añadir al calendario",
+    done: "Añadido al calendario de la universidad. Te avisamos antes."
+  },
+  {
+    cal: "personal", who: "Ana", subject: "¿Cenamos el jueves?", flag: "",
+    kicker: "Axis comprueba tu agenda",
+    what: "El jueves a las 21:00 estás libre en los tres calendarios. Responder que sí y añadir la cena",
+    when: "Jue, 21:00",
+    yes: "Responder y añadir",
+    done: "Cena añadida al calendario personal. Respuesta preparada para Ana."
+  },
+  {
+    cal: "work", who: "Tutor de prácticas", subject: "Recuerda mandar el informe semanal", flag: "",
+    kicker: "Sin propuesta",
+    what: "Este correo no contiene ninguna fecha. Axis no propone nada.",
+    when: "",
+    yes: "",
+    done: ""
+  }
+];
+
+function calById(id) {
+  for (var i = 0; i < CALENDARS.length; i++) {
+    if (CALENDARS[i].id === id) {
+      return CALENDARS[i];
+    }
+  }
+  return CALENDARS[0];
+}
+
+function pad2(n) {
+  if (n < 10) {
+    return "0" + n;
+  }
+  return String(n);
+}
+
+function fmtTime(h) {
+  var hh = Math.floor(h);
+  var mm = Math.round((h - hh) * 60);
+  return hh + ":" + pad2(mm);
+}
+
+function fmtDuration(h) {
+  var hh = Math.floor(h);
+  var mm = Math.round((h - hh) * 60);
+  if (mm === 0) {
+    return hh + " h";
+  }
+  if (hh === 0) {
+    return mm + " min";
+  }
+  return hh + " h " + mm + " min";
+}
+
+/* ---------- Demo 1: unified timeline ---------- */
+var visible = { uni: true, work: true, personal: true };
+var showGaps = false;
+
+function isVisible(ev) {
+  return visible[ev.cal] === true;
+}
+
+function overlaps(a, b) {
+  return a.start < b.end && b.start < a.end;
+}
+
+function visibleEvents() {
+  var list = [];
+  for (var i = 0; i < EVENTS.length; i++) {
+    if (isVisible(EVENTS[i])) {
+      list.push(EVENTS[i]);
+    }
+  }
+  list.sort(function (a, b) { return a.start - b.start; });
+  return list;
+}
+
+function findClashes(list) {
+  var clashes = [];
+  for (var i = 0; i < list.length; i++) {
+    for (var j = i + 1; j < list.length; j++) {
+      if (overlaps(list[i], list[j])) {
+        clashes.push([list[i], list[j]]);
+      }
+    }
+  }
+  return clashes;
+}
+
+function findGaps(list) {
+  var gaps = [];
+  var cursor = DAY_START;
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].start - cursor >= MIN_GAP_HOURS) {
+      gaps.push({ start: cursor, end: list[i].start });
+    }
+    if (list[i].end > cursor) {
+      cursor = list[i].end;
+    }
+  }
+  if (DAY_END - cursor >= MIN_GAP_HOURS) {
+    gaps.push({ start: cursor, end: DAY_END });
+  }
+  return gaps;
+}
+
+function renderChips() {
+  var box = document.getElementById("chips");
+  box.innerHTML = "";
+  for (var i = 0; i < CALENDARS.length; i++) {
+    (function (cal) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.style.setProperty("--c", cal.color);
+      b.setAttribute("aria-pressed", String(visible[cal.id]));
+      b.innerHTML = '<span class="dot"></span>' + cal.name;
+      b.addEventListener("click", function () {
+        visible[cal.id] = !visible[cal.id];
+        renderChips();
+        renderTimeline();
+      });
+      box.appendChild(b);
+    })(CALENDARS[i]);
+  }
+  var g = document.createElement("button");
+  g.type = "button";
+  g.className = "chip gaps";
+  g.setAttribute("aria-pressed", String(showGaps));
+  g.innerHTML = '<span class="dot"></span>Ver huecos';
+  g.addEventListener("click", function () {
+    showGaps = !showGaps;
+    renderChips();
+    renderTimeline();
+  });
+  box.appendChild(g);
+}
+
+function renderTimeline() {
+  var tl = document.getElementById("timeline");
+  tl.innerHTML = "";
+  for (var h = DAY_START; h <= DAY_END; h++) {
+    var line = document.createElement("div");
+    line.className = "hour";
+    line.style.top = (h - DAY_START) * PX_PER_HOUR + "px";
+    line.innerHTML = "<span>" + h + ":00</span>";
+    tl.appendChild(line);
+  }
+  var list = visibleEvents();
+  var clashes = findClashes(list);
+  var clashing = [];
+  for (var c = 0; c < clashes.length; c++) {
+    clashing.push(clashes[c][0]);
+    clashing.push(clashes[c][1]);
+  }
+
+  if (showGaps) {
+    var gaps = findGaps(list);
+    for (var k = 0; k < gaps.length; k++) {
+      var gb = document.createElement("div");
+      gb.className = "gap-block";
+      gb.style.top = (gaps[k].start - DAY_START) * PX_PER_HOUR + 2 + "px";
+      gb.style.height = (gaps[k].end - gaps[k].start) * PX_PER_HOUR - 4 + "px";
+      gb.textContent = "Hueco de " + fmtDuration(gaps[k].end - gaps[k].start);
+      tl.appendChild(gb);
+    }
+  }
+
+  var laneEnds = [];
+  for (var i = 0; i < list.length; i++) {
+    var ev = list[i];
+    var lane = 0;
+    while (lane < laneEnds.length && laneEnds[lane] > ev.start) {
+      lane++;
+    }
+    laneEnds[lane] = ev.end;
+    ev.lane = lane;
+  }
+  for (var j = 0; j < list.length; j++) {
+    var e = list[j];
+    var hasOverlap = clashing.indexOf(e) !== -1;
+    var el = document.createElement("div");
+    el.className = "ev";
+    if (hasOverlap) {
+      el.classList.add("clash");
+    }
+    el.style.setProperty("--c", calById(e.cal).color);
+    el.style.top = (e.start - DAY_START) * PX_PER_HOUR + 2 + "px";
+    el.style.height = (e.end - e.start) * PX_PER_HOUR - 4 + "px";
+    if (hasOverlap) {
+      el.style.left = e.lane * 50 + 4 + "px";
+      el.style.width = "calc(50% - 8px)";
+      if (e.lane === 0) {
+        el.style.left = "4px";
+      } else {
+        el.style.left = "calc(50% + 4px)";
+      }
+    } else {
+      el.style.left = "4px";
+      el.style.width = "calc(100% - 8px)";
+    }
+    el.innerHTML = "<b>" + e.title + "</b><small>" + fmtTime(e.start) + " a " + fmtTime(e.end) + "</small>";
+    tl.appendChild(el);
+  }
+
+  var status = document.getElementById("status");
+  status.className = "status";
+  var count = 0;
+  for (var q = 0; q < CALENDARS.length; q++) {
+    if (visible[CALENDARS[q].id]) {
+      count++;
+    }
+  }
+  if (clashes.length > 0) {
+    status.classList.add("alert");
+    status.innerHTML = "<span><b>Choque a las " + fmtTime(clashes[0][1].start) + ".</b> " + clashes[0][0].title + " y " + clashes[0][1].title + " se solapan. Con todo a la vista, lo ves antes de quedar.</span>";
+  } else if (count === 0) {
+    status.innerHTML = "<span>Activa un calendario para ver tu día.</span>";
+  } else if (count < 3) {
+    status.innerHTML = "<span>Mirando solo " + count + " de tus 3 calendarios, la tarde parece libre. Activa los tres y comprueba qué pasa.</span>";
+  } else {
+    status.classList.add("good");
+    status.innerHTML = "<span><b>Todo en orden.</b> Sin choques en tus tres calendarios.</span>";
+  }
+}
+
+/* ---------- Demo 2: AI proposals ---------- */
+var selectedMail = 1;
+var accepted = {};
+
+function renderInbox() {
+  var box = document.getElementById("inbox");
+  box.innerHTML = "";
+  for (var i = 0; i < EMAILS.length; i++) {
+    (function (index) {
+      var m = EMAILS[index];
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "mail";
+      b.style.setProperty("--c", calById(m.cal).color);
+      b.setAttribute("aria-pressed", String(selectedMail === index));
+      var flag = "";
+      if (m.flag !== "") {
+        flag = '<span class="flag">' + m.flag + "</span>";
+      }
+      b.innerHTML = '<span class="dot"></span><span><span class="who">' + m.who + '</span><span class="subj">' + m.subject + "</span></span>" + flag;
+      b.addEventListener("click", function () {
+        selectedMail = index;
+        renderInbox();
+        renderProposal();
+      });
+      box.appendChild(b);
+    })(i);
+  }
+}
+
+function renderProposal() {
+  var box = document.getElementById("proposal");
+  var m = EMAILS[selectedMail];
+  box.className = "proposal";
+  box.style.setProperty("--c", calById(m.cal).color);
+  if (m.yes === "") {
+    box.innerHTML = '<div class="kicker">' + m.kicker + '</div><div class="what">' + m.what + "</div>";
+    return;
+  }
+  if (accepted[selectedMail] === true) {
+    box.classList.add("done");
+    box.innerHTML = '<div class="kicker">Hecho</div><div class="what">' + m.done + '</div><div class="actions"><button class="btn ghost small" type="button" id="undo">Deshacer</button></div>';
+    document.getElementById("undo").addEventListener("click", function () {
+      accepted[selectedMail] = false;
+      renderProposal();
+    });
+    return;
+  }
+  box.innerHTML = '<div class="kicker">' + m.kicker + '</div><div class="what">' + m.what + '</div><div class="when">' + m.when + '</div><div class="actions"><button class="btn small" type="button" id="yes">' + m.yes + '</button><button class="btn ghost small" type="button" id="no">Ahora no</button></div>';
+  document.getElementById("yes").addEventListener("click", function () {
+    accepted[selectedMail] = true;
+    renderProposal();
+  });
+  document.getElementById("no").addEventListener("click", function () {
+    box.innerHTML = '<div class="kicker">Sin cambios</div><div class="what">No se ha tocado tu agenda. Tú decides.</div>';
+  });
+}
+
+/* ---------- Waitlist form ---------- */
+function saveLocal(email) {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    var list = [];
+    if (raw) {
+      list = JSON.parse(raw);
+    }
+    list.push(email);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  } catch (err) {
+    // storage may be unavailable, the confirmation still shows
+  }
+}
+
+function setupForm() {
+  var form = document.getElementById("form");
+  var input = document.getElementById("email");
+  var msg = document.getElementById("form-msg");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = input.value.trim();
+    var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!valid) {
+      msg.className = "form-msg err";
+      msg.textContent = "Escribe un correo válido, por ejemplo nombre@correo.com.";
+      input.focus();
+      return;
+    }
+    if (WAITLIST_ENDPOINT !== "") {
+      fetch(WAITLIST_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email })
+      }).catch(function () {});
+    }
+    saveLocal(email);
+    msg.className = "form-msg ok";
+    msg.textContent = "Gracias. Te avisaremos cuando haya algo que probar.";
+    input.value = "";
+  });
+}
+
+renderChips();
+renderTimeline();
+renderInbox();
+renderProposal();
+setupForm();
+</script>
+
+</body>
+</html>
